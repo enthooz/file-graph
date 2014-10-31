@@ -6,7 +6,6 @@ class AppDelegate
     # NSUserDefaults.standardUserDefaults.setBool(true,
     #   forKey: "NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints")
 
-    puts "test"
     buildMenu
     buildWindow
     buildScrollView
@@ -18,20 +17,21 @@ class AppDelegate
     # puts "rootFolder constraints: #{@rootFolder.constraints.count}"
 
     puts "\n\n\n"
-
+    puts "AMBIGUITY TEST"
+    puts "=============="
     @scrollView.testAmbiguity
-
+    puts "=============="
     puts "\n\n\n"
 
-    puts @scrollView._subtreeDescription
+    # puts @scrollView._subtreeDescription
 
-    puts "\n\n\n"
+    # puts "\n\n\n"
 
-    puts @mainView.constraintsAffectingLayoutForOrientation(0)
-    puts "\n\n\n"
-    puts @mainView.constraintsAffectingLayoutForOrientation(1)
+    # puts @mainView.constraintsAffectingLayoutForOrientation(0)
+    # puts "\n\n\n"
+    # puts @mainView.constraintsAffectingLayoutForOrientation(1)
 
-    puts "\n\n\n"
+    # puts "\n\n\n"
 
     #@rootFolder.open
 

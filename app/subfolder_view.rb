@@ -1,10 +1,11 @@
 class SubfolderView < FlippedView
 
-  attr_accessor :endConstraint, :folderPath
+  attr_accessor :folders, :folderPath, :horizontalLine, :horizontalLineConstraints, :endConstraint
 
   def initWithPath(path)
 
     self.folderPath = path
+    self.folders = []
 
     initWithFrame([ [0, 0], [0, 0] ])
 
@@ -56,10 +57,13 @@ class SubfolderView < FlippedView
     subfolder_paths.each do |subfolder_path|
       self.addSubview(Folder.alloc.initWithPath(subfolder_path))
     end
+
+    #drawLine
   end
 
   def close
-    puts "SubfolderView#hide"
+    #puts "SubfolderView#hide"
+    #eraseLine
     while self.subviews.any? do
       self.subviews.last.removeFromSuperview
     end
@@ -72,6 +76,11 @@ class SubfolderView < FlippedView
   #   self.wantsLayer = true
   #   self.needsDisplay = true
   # end
+
+  def addFolder(subfolder)
+    self.folders << subfolder
+    self.addSubview(subfolder)
+  end
 
   def addSubview(subfolder)
     raise 'InvalidFolder' unless subfolder.is_a? Folder
@@ -108,11 +117,11 @@ class SubfolderView < FlippedView
                                                       constant: 0.0))
     else
       # subfolder.left == penultimateSubfolder.right + 10
-      thePenultimateView = self.subviews[self.subviews.count - 2]
+      thePenultimateFolder = self.subviews[self.subviews.count - 2]
       self.addConstraint(NSLayoutConstraint.constraintWithItem(subfolder,
                                                      attribute: NSLayoutAttributeLeft,
                                                      relatedBy: NSLayoutRelationEqual,
-                                                        toItem: thePenultimateView,
+                                                        toItem: thePenultimateFolder,
                                                      attribute: NSLayoutAttributeRight,
                                                     multiplier: 1.0,
                                                       constant: 10.0))
@@ -138,6 +147,52 @@ class SubfolderView < FlippedView
     while self.subviews.any? do
       self.subviews.last.removeFromSuperview
     end
+  end
+
+  # TODO: this breaks the ability to add subfolders after drawing line
+  def drawLine
+    return unless self.folders.any?
+    self.horizontalLine = Line.alloc.initFrom([0, 0], to: [self.bounds.size.width, 1])
+    self.addSubview(self.horizontalLine)
+    self.horizontalLineConstraints = []
+    self.horizontalLineConstraints.tap do |c|
+      c << NSLayoutConstraint.constraintWithItem(self.horizontalLine,
+                                                           attribute: NSLayoutAttributeLeft,
+                                                           relatedBy: NSLayoutRelationEqual,
+                                                           toItem: self.folders.first,
+                                                           attribute: NSLayoutAttributeCenterX,
+                                                           multiplier: 1.0,
+                                                           constant: 0.0)
+      c << NSLayoutConstraint.constraintWithItem(self.horizontalLine,
+                                                           attribute: NSLayoutAttributeRight,
+                                                           relatedBy: NSLayoutRelationEqual,
+                                                           toItem: self.folders.last,
+                                                           attribute: NSLayoutAttributeCenterX,
+                                                           multiplier: 1.0,
+                                                           constant: 0.0)
+      c << NSLayoutConstraint.constraintWithItem(self.horizontalLine,
+                                                           attribute: NSLayoutAttributeTop,
+                                                           relatedBy: NSLayoutRelationEqual,
+                                                           toItem: self.folders.first,
+                                                           attribute: NSLayoutAttributeTop,
+                                                           multiplier: 0.5,
+                                                           constant: 0.0)
+      c << NSLayoutConstraint.constraintWithItem(self.horizontalLine,
+                                                           attribute: NSLayoutAttributeBottom,
+                                                           relatedBy: NSLayoutRelationEqual,
+                                                           toItem: self.folders.first,
+                                                           attribute: NSLayoutAttributeTop,
+                                                           multiplier: 0.5,
+                                                           constant: 2.0)
+      views = { 'line' => self.horizontalLine }
+      c += NSLayoutConstraint.constraintsWithVisualFormat("V:[line(==2)]", options: 0, metrics: nil, views: views)
+      c += NSLayoutConstraint.constraintsWithVisualFormat("H:[line(>=1)]", options: 0, metrics: nil, views: views)
+    end
+    #puts self.horizontalLineConstraints
+    self.addConstraints(self.horizontalLineConstraints)
+  end
+
+  def eraseLine
   end
   
   # - (void)willRemoveSubview:(NSView *)subview;

@@ -169,7 +169,6 @@ class Folder < FlippedView
   #
   #-------------------------------------------------------------
   def setConstraints
-    puts "Folder#setLayoutConstraints"
     views = { 'folderIcon' => @folderIcon, 'subfolderView' => @subfolderView }
 
     unless self.layoutConstraints.nil?
