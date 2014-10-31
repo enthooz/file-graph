@@ -103,7 +103,7 @@ class SubfolderView < FlippedView
                                                         toItem: thePenultimateView,
                                                      attribute: NSLayoutAttributeRight,
                                                     multiplier: 1.0,
-                                                      constant: 0.0))
+                                                      constant: 10.0))
     end
     
     if (self.endConstraint != nil)
