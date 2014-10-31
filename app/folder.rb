@@ -193,7 +193,7 @@ class Folder < FlippedView
       # Folder icon stuck to top.  Subfolder view stuck to folder icon.
       self.layoutConstraints =  NSLayoutConstraint.constraintsWithVisualFormat("V:|-[folderIcon]-[subfolderView]-|",
                                                                                       options: 0, metrics: nil, views: views)
-      self.layoutConstraints += NSLayoutConstraint.constraintsWithVisualFormat("H:|-[subfolderView]-|",
+      self.layoutConstraints += NSLayoutConstraint.constraintsWithVisualFormat("H:|-[subfolderView(>=folderIcon)]-|",
                                                                                       options: 0, metrics: nil, views: views)
       self.layoutConstraints << NSLayoutConstraint.constraintWithItem(@folderIcon,
                                      attribute: NSLayoutAttributeCenterX,
