@@ -1,8 +1,11 @@
 class SubfolderView < FlippedView
 
-  attr_accessor :endConstraint
+  attr_accessor :endConstraint, :folderPath
 
-  def init
+  def initWithPath(path)
+
+    self.folderPath = path
+
     initWithFrame([ [0, 0], [0, 0] ])
 
     self.translatesAutoresizingMaskIntoConstraints = false
@@ -45,6 +48,15 @@ class SubfolderView < FlippedView
   #   # NSFrameRect(dirtyRect)
   #   super
   # end
+
+  def open
+    # list subdirectories
+    subfolder_paths = Dir[File.join(self.folderPath, '*/')]
+
+    subfolder_paths.each do |subfolder_path|
+      self.addSubview(Folder.alloc.initWithPath(subfolder_path))
+    end
+  end
 
   def close
     puts "SubfolderView#hide"

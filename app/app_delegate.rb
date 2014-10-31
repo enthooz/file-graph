@@ -36,7 +36,7 @@ class AppDelegate
     #@rootFolder.open
 
     # DEBUG
-    @mainWindow.visualizeConstraints(@spacerLeft.constraints)
+    @mainWindow.visualizeConstraints(@scrollView.constraints)
   end
 
   #-------------------------------------------------------------

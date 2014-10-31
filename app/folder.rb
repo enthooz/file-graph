@@ -100,31 +100,19 @@ class Folder < FlippedView
   #
   #-------------------------------------------------------------
   def open
-    puts "Folder#open"
     self.is_open = true
-
-    # list subdirectories
-    subfolder_paths = Dir[File.join(self.folderPath, '*/')]
-
     self.addSubview(@subfolderView)
+    @subfolderView.open
     setConstraints
-    #setSubfolderViewConstraints
-
-    subfolder_paths.each do |subfolder_path|
-      @subfolderView.addSubview(Folder.alloc.initWithPath(subfolder_path))
-    end
-
   end
 
   #-------------------------------------------------------------
   #
   #-------------------------------------------------------------
   def close
-    puts "Folder#close"
     self.is_open = false
     @subfolderView.close
     setConstraints
-    #setSubfolderViewConstraints
   end
 
   #-------------------------------------------------------------
@@ -140,7 +128,7 @@ class Folder < FlippedView
   #
   #-------------------------------------------------------------
   def drawSubfolderView
-    @subfolderView = SubfolderView.alloc.init
+    @subfolderView = SubfolderView.alloc.initWithPath(self.folderPath)
   end
 
   #-------------------------------------------------------------
