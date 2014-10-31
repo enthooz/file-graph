@@ -114,11 +114,18 @@ class AppDelegate
     @mainView.backgroundColor = NSColorFromHex('#99ccff')
     @scrollView.documentView = @mainView
 
-    views = { 'mainView' => @mainView }
+
+    views = { 'mainView' => @mainView, 'scrollView' => @scrollView.contentView }
     constraints = []
 
-    constraints += NSLayoutConstraint.constraintsWithVisualFormat("H:|[mainView]|", options: 0, metrics: nil, views: views)
-    constraints += NSLayoutConstraint.constraintsWithVisualFormat("V:|[mainView]|", options: 0, metrics: nil, views: views)
+    constraints += NSLayoutConstraint.constraintsWithVisualFormat("V:[mainView(>=scrollView)]", options: 0, metrics: nil, views: views)
+    @scrollView.addConstraint(NSLayoutConstraint.constraintWithItem(@mainView,
+                                                                   attribute: NSLayoutAttributeWidth,
+                                                                   relatedBy: NSLayoutRelationGreaterThanOrEqual,
+                                                                   toItem: @scrollView.contentView,
+                                                                   attribute: NSLayoutAttributeWidth,
+                                                                   multiplier: 1.0,
+                                                                   constant: -1.0)) # avoid pixel wiggle caused by rounding
 
     @scrollView.addConstraints(constraints)
   end
@@ -132,9 +139,17 @@ class AppDelegate
 
     @mainView.addSubview(@rootFolder)
 
-    views = { 'rootFolder' => @rootFolder }
+    views = { 'mainView' => @mainView, 'rootFolder' => @rootFolder }
 
     @mainView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[rootFolder]-(>=20)-|", options: 0, metrics: nil, views: views))
+
+    @mainView.addConstraint(NSLayoutConstraint.constraintWithItem(@mainView,
+                                                                   attribute: NSLayoutAttributeWidth,
+                                                                   relatedBy: NSLayoutRelationGreaterThanOrEqual,
+                                                                   toItem: @rootFolder,
+                                                                   attribute: NSLayoutAttributeWidth,
+                                                                   multiplier: 1.0,
+                                                                   constant: 40))
 
     @mainView.addConstraint(NSLayoutConstraint.constraintWithItem(@rootFolder, 
                                                    attribute: NSLayoutAttributeCenterX,
