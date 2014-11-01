@@ -1,3 +1,6 @@
+#-------------------------------------------------------------
+#
+#-------------------------------------------------------------
 def CGColorCreateHex(hex, alpha = 1.0)
   # yolo
   CGColorCreateGenericRGB(*hex.scan(/[a-f0-9]{2}/i).map do |hex|
@@ -5,6 +8,9 @@ def CGColorCreateHex(hex, alpha = 1.0)
   end, alpha)
 end
 
+#-------------------------------------------------------------
+#
+#-------------------------------------------------------------
 def NSColorFromHex(hex, alpha = 1.0)
   r, g, b = hex.scan(/[a-f0-9]{2}/i).map do |hex|
     hex.to_i(16) / 255.0
@@ -12,6 +18,9 @@ def NSColorFromHex(hex, alpha = 1.0)
   NSColor.colorWithSRGBRed(r, green: g, blue: b, alpha: alpha)
 end
 
+#-------------------------------------------------------------
+#
+#-------------------------------------------------------------
 class NSView
   def testAmbiguity
     NSLog("<%@:0x%0x>: %@",
@@ -26,9 +35,11 @@ class NSView
     self.subviews.each { |view| constraints += view.allConstraints }
     constraints
   end
-
 end
 
+#-------------------------------------------------------------
+#
+#-------------------------------------------------------------
 class NSLayoutConstraint
 
   RELATIONS = { -1 => '<=',
@@ -71,5 +82,4 @@ class NSLayoutConstraint
   def secondAttributeToString
     ATTRIBUTES[secondAttribute]
   end
-
 end

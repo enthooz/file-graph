@@ -10,7 +10,7 @@ class FolderIcon < FlippedView
 
   def initWithName(folder_name)
 
-    initWithFrame([ [0, 0], [WIDTH, HEIGHT] ])
+    init
 
     self.translatesAutoresizingMaskIntoConstraints = false
 
@@ -21,8 +21,21 @@ class FolderIcon < FlippedView
     drawLabel
     setConstraints
     self.layer.addSublayer(@folderRect)
-    self.backgroundColor = NSColorFromHex('#ff0000', 0.5)
+    #self.backgroundColor = NSColorFromHex('#ff0000', 0.5)
     self
+  end
+
+  #-------------------------------------------------------------
+  #
+  #-------------------------------------------------------------
+  def mouseDown(event)
+  end
+
+  #-------------------------------------------------------------
+  #
+  #-------------------------------------------------------------
+  def mouseUp(event)
+    self.superview.toggle if event.clickCount % 2 == 0
   end
 
   def intrinsicContentSize

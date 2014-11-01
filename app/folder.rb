@@ -4,6 +4,7 @@ class Folder < FlippedView
 
   attr_accessor :is_open, :is_root, :folderPath, :folderName, :folderIcon, :subfolderView
   attr_accessor :layoutConstraints, :subfolderViewConstraints
+  attr_accessor :rankLine
   #attr_reader :layer
 
   #-------------------------------------------------------------
@@ -11,7 +12,7 @@ class Folder < FlippedView
   #-------------------------------------------------------------
   def initWithPath(folder_path)
 
-    initWithFrame([ [0, 0], [0, 0] ])
+    init
 
     self.translatesAutoresizingMaskIntoConstraints = false
 
@@ -22,15 +23,6 @@ class Folder < FlippedView
     drawFolderIcon
     drawSubfolderView
     setConstraints
-    #applyConstraints
-
-    #self.setSizeConstraints
-
-    # self.wantsLayer = true
-    # self.needsDisplay = true
-    # self.backgroundColor = NSColorFromHex('#999999', 1.0)
-    # self.borderWidth = 1
-    # self.borderColor = NSColorFromHex('#666666', 1.0)
 
     self
   end
@@ -39,48 +31,30 @@ class Folder < FlippedView
   #
   #-------------------------------------------------------------
   def drawRect(dirtyRect)
-    NSColorFromHex('#999999', 0.8).setFill
-    NSColorFromHex('#666666', 1.0).setStroke
-    NSBezierPath.fillRect(dirtyRect)
-    NSBezierPath.strokeRect(dirtyRect)
+    NSColorFromHex('#999999', 1.0).setFill
+    #NSBezierPath.fillRect(dirtyRect)
+    #NSColorFromHex("#999999", 1.0).setStroke
+    #NSBezierPath.strokeRect(dirtyRect)
     # NSColorFromHex('#666666', 0.8).setFill
-    # NSFrameRect(dirtyRect)
+    NSFrameRect(dirtyRect)
     super
   end
 
-  # def setSizeConstraints
-  # #   views = { 'self' => self }
-  # #   self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[self(#{FolderIcon::HEIGHT})]-|",
-  # #                                                              options: 0,
-  # #                                                              metrics: nil,
-  # #                                                                views: views))
-  # #   self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[self(#{FolderIcon::WIDTH})]-|",
-  # #                                                              options: 0,
-  # #                                                              metrics: nil,
-  # #                                                                views: views))
-  #   views = { 'self' => self }
-  #   self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[folderIcon(#{FolderIcon::HEIGHT})]",
-  #                                                              options: 0,
-  #                                                              metrics: nil,
-  #                                                                views: views))
-  #   self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-30-[folderIcon(#{FolderIcon::WIDTH})]",
-  #                                                              options: 0,
-  #                                                              metrics: nil,
-  #                                                                views: views))
-  # end
-
   #-------------------------------------------------------------
   #
   #-------------------------------------------------------------
-  def mouseDown(event)
+  def drawFolderIcon
+    @folderIcon = FolderIcon.alloc.initWithName(self.folderName)
+    self.addSubview(@folderIcon)
   end
 
   #-------------------------------------------------------------
   #
   #-------------------------------------------------------------
-  def mouseUp(event)
-    toggle if event.clickCount % 2 == 0
+  def drawSubfolderView
+    @subfolderView = SubfolderView.alloc.initWithPath(self.folderPath)
   end
+
 
   #-------------------------------------------------------------
   #
@@ -103,6 +77,7 @@ class Folder < FlippedView
     self.is_open = true
     self.addSubview(@subfolderView)
     @subfolderView.open
+    #self.drawLines
     setConstraints
   end
 
@@ -115,61 +90,57 @@ class Folder < FlippedView
     setConstraints
   end
 
-  #-------------------------------------------------------------
-  #
-  #-------------------------------------------------------------
-  def drawFolderIcon
-    @folderIcon = FolderIcon.alloc.initWithName(self.folderName)
-    self.addSubview(@folderIcon)
-    #@folderIcon.setConstraints
+
+  # TODO: this breaks the ability to add subfolders after drawing line
+  def drawLines
+    return unless self.folders.any?
+    self.horizontalLine = Line.alloc.initFrom([0, 0], to: [self.bounds.size.width, 1])
+    self.addSubview(self.horizontalLine)
+    self.horizontalLineConstraints = []
+    self.horizontalLineConstraints.tap do |c|
+      c << NSLayoutConstraint.constraintWithItem(self.horizontalLine,
+                                                           attribute: NSLayoutAttributeLeft,
+                                                           relatedBy: NSLayoutRelationEqual,
+                                                           toItem: self.folders.first,
+                                                           attribute: NSLayoutAttributeCenterX,
+                                                           multiplier: 1.0,
+                                                           constant: 0.0)
+      c << NSLayoutConstraint.constraintWithItem(self.horizontalLine,
+                                                           attribute: NSLayoutAttributeRight,
+                                                           relatedBy: NSLayoutRelationEqual,
+                                                           toItem: self.folders.last,
+                                                           attribute: NSLayoutAttributeCenterX,
+                                                           multiplier: 1.0,
+                                                           constant: 0.0)
+      c << NSLayoutConstraint.constraintWithItem(self.horizontalLine,
+                                                           attribute: NSLayoutAttributeTop,
+                                                           relatedBy: NSLayoutRelationEqual,
+                                                           toItem: self.folders.first,
+                                                           attribute: NSLayoutAttributeTop,
+                                                           multiplier: 0.5,
+                                                           constant: 0.0)
+      c << NSLayoutConstraint.constraintWithItem(self.horizontalLine,
+                                                           attribute: NSLayoutAttributeBottom,
+                                                           relatedBy: NSLayoutRelationEqual,
+                                                           toItem: self.folders.first,
+                                                           attribute: NSLayoutAttributeTop,
+                                                           multiplier: 0.5,
+                                                           constant: 2.0)
+      views = { 'line' => self.horizontalLine }
+      c += NSLayoutConstraint.constraintsWithVisualFormat("V:[line(==2)]", options: 0, metrics: nil, views: views)
+      c += NSLayoutConstraint.constraintsWithVisualFormat("H:[line(>=1)]", options: 0, metrics: nil, views: views)
+    end
+    #puts self.horizontalLineConstraints
+    self.addConstraints(self.horizontalLineConstraints)
   end
 
-  #-------------------------------------------------------------
-  #
-  #-------------------------------------------------------------
-  def drawSubfolderView
-    @subfolderView = SubfolderView.alloc.initWithPath(self.folderPath)
+  def eraseLine
   end
-
-  #-------------------------------------------------------------
-  #
-  #-------------------------------------------------------------
-  # def setConstraints
-  #   
-  #   views = { 'folderIcon' => @folderIcon, 'subfolderView' => @subfolderView }
-
-  #   self.setLayoutConstraints
-  #   #self.setSubfolderViewConstraints
-
-  #   # TODO: prevent the following constraints from getting added multiple
-  #   # times
-
-  #   # Folder icon is at least as wide as specified.
-  #   # constraints = NSLayoutConstraint.constraintsWithVisualFormat("H:[folderIcon(>=#{FolderIcon::WIDTH})]",
-  #   #                                                               options: 0, metrics: nil, views: views)
-  #   # constraints += NSLayoutConstraint.constraintsWithVisualFormat("H:|-(>=20)-[subfolderView]-(>=20)-|",
-  #   #                                                               options: 0, metrics: nil, views: views)
-  #   # constraints += NSLayoutConstraint.constraintsWithVisualFormat("H:[subfolderView(>=#{FolderIcon::WIDTH})]",
-  #   #                                                               options: 0, metrics: nil, views: views)
-
-
-  #   # Folder icon is centered in folder view.
-  #   constraints << NSLayoutConstraint.constraintWithItem(@folderIcon,
-  #                                  attribute: NSLayoutAttributeCenterX,
-  #                                  relatedBy: NSLayoutRelationEqual,
-  #                                  toItem:    self,
-  #                                  attribute: NSLayoutAttributeCenterX,
-  #                                  multiplier: 1, constant: 0)
-
-  #   self.addConstraints(constraints)
-
-  # end
 
   #-------------------------------------------------------------
   #
   #-------------------------------------------------------------
   def setConstraints
-    views = { 'folderIcon' => @folderIcon, 'subfolderView' => @subfolderView }
 
     unless self.layoutConstraints.nil?
       self.removeConstraints(self.layoutConstraints)
@@ -177,113 +148,37 @@ class Folder < FlippedView
     end
 
     if @subfolderView.isDescendantOf(self)
-      # Folder icon stuck to top.  Subfolder view stuck to folder icon.
-      self.layoutConstraints =  NSLayoutConstraint.constraintsWithVisualFormat("V:|-[folderIcon][subfolderView]|",
-                                                                                      options: 0, metrics: nil, views: views)
-      self.layoutConstraints += NSLayoutConstraint.constraintsWithVisualFormat("H:|[subfolderView(>=folderIcon)]|",
-                                                                                      options: 0, metrics: nil, views: views)
-      self.layoutConstraints << NSLayoutConstraint.constraintWithItem(@folderIcon,
-                                     attribute: NSLayoutAttributeCenterX,
-                                     relatedBy: NSLayoutRelationEqual,
-                                     toItem:    @subfolderView,
-                                     attribute: NSLayoutAttributeCenterX,
-                                     multiplier: 1, constant: 0)
-      self.layoutConstraints << NSLayoutConstraint.constraintWithItem(@folderIcon,
-                                     attribute: NSLayoutAttributeCenterX,
-                                     relatedBy: NSLayoutRelationEqual,
-                                     toItem:    @subfolderView,
-                                     attribute: NSLayoutAttributeCenterX,
-                                     multiplier: 1, constant: 0)
+      self.setConstraintsWithSubfolderView
     else
-      # Folder icon stuck to top.
-      self.layoutConstraints =  NSLayoutConstraint.constraintsWithVisualFormat("V:|-[folderIcon]|",
-                                                                                      options: 0, metrics: nil, views: views)
-      self.layoutConstraints += NSLayoutConstraint.constraintsWithVisualFormat("H:|[folderIcon]|",
-                                                                                      options: 0, metrics: nil, views: views)
+      self.setConstraintsWithoutSubfolderView
     end
+  end
+
+  private
+
+  def setConstraintsWithoutSubfolderView
+    views = { 'folderIcon' => @folderIcon, 'subfolderView' => @subfolderView }
+
+    # Folder icon stuck to top.  Subfolder view stuck to folder icon.
+    self.layoutConstraints =  NSLayoutConstraint.constraintsWithVisualFormat("V:|-[folderIcon][subfolderView]|",
+                                                                                    options: 0, metrics: nil, views: views)
+    self.layoutConstraints += NSLayoutConstraint.constraintsWithVisualFormat("H:|[subfolderView(>=folderIcon)]|",
+                                                                                    options: 0, metrics: nil, views: views)
+    # folderIcon.centerX == subfolderView.centerX
+    self.layoutConstraints << NSLayoutConstraint.constraintWithItem(@folderIcon,
+                                   attribute: NSLayoutAttributeCenterX,
+                                   relatedBy: NSLayoutRelationEqual,
+                                   toItem:    @subfolderView,
+                                   attribute: NSLayoutAttributeCenterX,
+                                   multiplier: 1, constant: 0)
     self.addConstraints(self.layoutConstraints)
   end
 
-  #-------------------------------------------------------------
-  #
-  #-------------------------------------------------------------
-  # def setSubfolderViewConstraints
-  #   unless self.subfolderViewConstraints.nil?
-  #     self.removeConstraints(self.subfolderViewConstraints)
-  #     self.subfolderViewConstraints = nil
-  #   end
-  #   if @subfolderView.isDescendantOf(self)
-  #     self.subfolderViewConstraints = []
-  #     self.subfolderViewConstraints << NSLayoutConstraint.constraintWithItem(@subfolderView,
-  #                                                                  attribute: NSLayoutAttributeCenterX,
-  #                                                                  relatedBy: NSLayoutRelationEqual,
-  #                                                                  toItem:    self,
-  #                                                                  attribute: NSLayoutAttributeCenterX,
-  #                                                                  multiplier: 1, constant: 0)
-
-  #     self.subfolderViewConstraints << NSLayoutConstraint.constraintWithItem(self,
-  #                                                                  attribute: NSLayoutAttributeWidth,
-  #                                                                  relatedBy: NSLayoutRelationGreaterThanOrEqual,
-  #                                                                  toItem:    @subfolderView,
-  #                                                                  attribute: NSLayoutAttributeWidth,
-  #                                                                  multiplier: 1, constant: 0)
-
-  #     self.addConstraints(self.subfolderViewConstraints)
-  #   end
-  # end
-
-  #-------------------------------------------------------------
-  #
-  #-------------------------------------------------------------
-  # def applyConstraints
-  #   self.translatesAutoresizingMaskIntoConstraints = false
-  #   puts "constraints"
-  #   puts self.constraints
-  #   puts "END constraints"
-  #   self.removeConstraints(self.constraints) if self.constraints.any?
-  #   self.addConstraints(initializeConstraints)
-  # end
-
-  #-------------------------------------------------------------
-  #
-  #-------------------------------------------------------------
-  # def initializeConstraints
-  #   views = { 'folderIcon' => @folderIcon, 'subfolderView' => @subfolderView }
-  #   if @subfolderView.isDescendantOf(self)
-  #     c = [
-  #       NSLayoutConstraint.constraintsWithVisualFormat("V:|-[folderIcon]-[subfolderView]-|",
-  #                                              options: 0,
-  #                                              metrics: nil,
-  #                                                views: views),
-  #       NSLayoutConstraint.constraintsWithVisualFormat("H:|-[subfolderView]-|",
-  #                                              options: 0,
-  #                                              metrics: nil,
-  #                                                views: views)
-  #     ].flatten
-  #   else
-  #     c = [
-  #       NSLayoutConstraint.constraintsWithVisualFormat("V:|-[folderIcon]-|",
-  #                                              options: 0,
-  #                                              metrics: nil,
-  #                                                views: views)
-  #     ].flatten
-  #   end
-  #   puts "resultant constraints: #{c.count}"
-  #   c.each do |constraint|
-  #     puts "CONSTRAINT:"
-  #         #multiplier
-  #         #constant
-  #     %w( firstItem
-  #         firstAttribute
-  #         relation
-  #         secondItem
-  #         secondAttribute
-  #         identifier ).each do |attr|
-  #       puts " |-#{attr}: #{constraint.send(attr)}"
-  #     end
-  #     puts ""
-  #   end
-  #   c
-  # end
+  def setConstraintsWithSubfolderView
+    views = { 'folderIcon' => @folderIcon}
+    self.layoutConstraints =  NSLayoutConstraint.constraintsWithVisualFormat("V:|-[folderIcon]|", options: 0, metrics: nil, views: views)
+    self.layoutConstraints += NSLayoutConstraint.constraintsWithVisualFormat("H:|[folderIcon]|", options: 0, metrics: nil, views: views)
+    self.addConstraints(self.layoutConstraints)
+  end
 
 end

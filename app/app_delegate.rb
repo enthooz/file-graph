@@ -56,10 +56,10 @@ class AppDelegate
   #
   #-------------------------------------------------------------
   def buildScrollView
-    @scrollView = NSScrollView.alloc.initWithFrame(@mainWindow.contentView.bounds)
+    @scrollView = NSScrollView.alloc.init
 
-    @scrollView.translatesAutoresizingMaskIntoConstraints = true
-    @scrollView.autoresizingMask = NSViewHeightSizable | NSViewWidthSizable
+    @scrollView.translatesAutoresizingMaskIntoConstraints = false
+    #@scrollView.autoresizingMask = NSViewHeightSizable | NSViewWidthSizable
 
     @scrollView.backgroundColor = NSColorFromHex('#cccccc')
 
@@ -69,46 +69,13 @@ class AppDelegate
     @scrollView.hasHorizontalScroller = true
     @scrollView.scrollerStyle = NSScrollerStyleOverlay
     @mainWindow.setContentView(@scrollView)
-
-    #views = { 'scrollView' => @scrollView, 'mainWindow' => @mainWindow }
-    # TODO: this seems to be assigning constraints on a view against itself
-    ## @mainWindow.contentView.tap do |view|
-    ##   view.addConstraint(NSLayoutConstraint.constraintWithItem(@scrollView, 
-    ##                                                  attribute: NSLayoutAttributeCenterX,
-    ##                                                  relatedBy: NSLayoutRelationEqual,
-    ##                                                     toItem: view,
-    ##                                                  attribute: NSLayoutAttributeCenterX,
-    ##                                                 multiplier: 1.0,
-    ##                                                   constant: 0.0))
-    ##   view.addConstraint(NSLayoutConstraint.constraintWithItem(@scrollView, 
-    ##                                                  attribute: NSLayoutAttributeCenterY,
-    ##                                                  relatedBy: NSLayoutRelationEqual,
-    ##                                                     toItem: view,
-    ##                                                  attribute: NSLayoutAttributeCenterY,
-    ##                                                 multiplier: 1.0,
-    ##                                                   constant: 0.0))
-    ##   view.addConstraint(NSLayoutConstraint.constraintWithItem(@scrollView, 
-    ##                                                  attribute: NSLayoutAttributeWidth,
-    ##                                                  relatedBy: NSLayoutRelationEqual,
-    ##                                                     toItem: view,
-    ##                                                  attribute: NSLayoutAttributeWidth,
-    ##                                                 multiplier: 1.0,
-    ##                                                   constant: 0.0))
-    ##   view.addConstraint(NSLayoutConstraint.constraintWithItem(@scrollView, 
-    ##                                                  attribute: NSLayoutAttributeHeight,
-    ##                                                  relatedBy: NSLayoutRelationEqual,
-    ##                                                     toItem: view,
-    ##                                                  attribute: NSLayoutAttributeHeight,
-    ##                                                 multiplier: 1.0,
-    ##                                                   constant: 0.0))
-    ## end
   end
 
   #-------------------------------------------------------------
   #
   #-------------------------------------------------------------
   def buildMainView
-    @mainView = FlippedView.alloc.initWithFrame(@scrollView.contentView.bounds)
+    @mainView = FlippedView.alloc.init
 
     @mainView.translatesAutoresizingMaskIntoConstraints = false
     @mainView.backgroundColor = NSColorFromHex('#99ccff')
@@ -136,13 +103,14 @@ class AppDelegate
   def buildRootFolder
 
     @rootFolder = Folder.alloc.initWithPath('/Users/aashbacher/Documents/')
-
     @mainView.addSubview(@rootFolder)
 
+    # Define constraints
     views = { 'mainView' => @mainView, 'rootFolder' => @rootFolder }
 
     @mainView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[rootFolder]-(>=20)-|", options: 0, metrics: nil, views: views))
 
+    # mainView.width >= rootFolder.width + 40
     @mainView.addConstraint(NSLayoutConstraint.constraintWithItem(@mainView,
                                                                    attribute: NSLayoutAttributeWidth,
                                                                    relatedBy: NSLayoutRelationGreaterThanOrEqual,
@@ -151,6 +119,7 @@ class AppDelegate
                                                                    multiplier: 1.0,
                                                                    constant: 40))
 
+    # rootFolder.centerX == mainView.centerX
     @mainView.addConstraint(NSLayoutConstraint.constraintWithItem(@rootFolder, 
                                                    attribute: NSLayoutAttributeCenterX,
                                                    relatedBy: NSLayoutRelationEqual,

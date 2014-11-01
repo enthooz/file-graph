@@ -1,6 +1,6 @@
 class SpacerView < NSView
   def init
-    self.initWithFrame([ [0, 0], [0, 0] ])
+    self.init
     self.translatesAutoresizingMaskIntoConstraints = false
     self
   end
