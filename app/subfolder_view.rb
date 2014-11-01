@@ -1,11 +1,14 @@
 class SubfolderView < FlippedView
 
-  attr_accessor :folders, :folderPath, :horizontalLine, :horizontalLineConstraints, :endConstraint
+  FOLDER_SPACING = 10.0
+
+  attr_accessor :folderPath, :horizontalLine, :horizontalLineConstraints, :endConstraint
+
+  alias_method :folders, :subviews
 
   def initWithPath(path)
 
     self.folderPath = path
-    self.folders = []
 
     init
 
@@ -46,9 +49,8 @@ class SubfolderView < FlippedView
     #self.removeConstraints(self.constraints)
   end
 
-  def addFolder(subfolder)
-    self.folders << subfolder
-    self.addSubview(subfolder)
+  def empty?
+    !self.subviews.any?
   end
 
   def addSubview(subfolder)
@@ -84,7 +86,7 @@ class SubfolderView < FlippedView
                                                         toItem: thePenultimateFolder,
                                                      attribute: NSLayoutAttributeRight,
                                                     multiplier: 1.0,
-                                                      constant: 10.0))
+                                                      constant: FOLDER_SPACING))
     end
     
     if (self.endConstraint != nil)

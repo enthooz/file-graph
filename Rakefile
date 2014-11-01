@@ -11,4 +11,9 @@ end
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.name = 'FileChart'
+
+  app.files_dependencies({
+    'app/spacer_view.rb' => 'app/view.rb',
+    'app/flipped_view.rb' => 'app/view.rb'
+  })
 end

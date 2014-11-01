@@ -1,5 +1,7 @@
 class AppDelegate
 
+  DEBUG = false
+
   def applicationDidFinishLaunching(notification)
 
     # DEBUG
@@ -12,31 +14,16 @@ class AppDelegate
     buildMainView
     buildRootFolder
 
-    # puts "scrollView constraints: #{@scrollView.constraints.count}"
-    # puts "scrollView.contentView constraints: #{@scrollView.contentView.constraints.count}"
-    # puts "rootFolder constraints: #{@rootFolder.constraints.count}"
+    if DEBUG
+      puts "\n\n\n"
+      puts "AMBIGUITY TEST"
+      puts "=============="
+      @scrollView.testAmbiguity
+      puts "=============="
+      puts "\n\n\n"
 
-    puts "\n\n\n"
-    puts "AMBIGUITY TEST"
-    puts "=============="
-    @scrollView.testAmbiguity
-    puts "=============="
-    puts "\n\n\n"
-
-    # puts @scrollView._subtreeDescription
-
-    # puts "\n\n\n"
-
-    # puts @mainView.constraintsAffectingLayoutForOrientation(0)
-    # puts "\n\n\n"
-    # puts @mainView.constraintsAffectingLayoutForOrientation(1)
-
-    # puts "\n\n\n"
-
-    #@rootFolder.open
-
-    # DEBUG
-    @mainWindow.visualizeConstraints(@scrollView.constraints)
+      @mainWindow.visualizeConstraints(@scrollView.constraints)
+    end
   end
 
   #-------------------------------------------------------------

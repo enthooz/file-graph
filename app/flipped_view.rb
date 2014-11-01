@@ -1,7 +1,8 @@
-class FlippedView < NSView
+class FlippedView < View
   def isFlipped
     true
   end
+
 
   # #-------------------------------------------------------------
   # #
