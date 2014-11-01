@@ -89,7 +89,7 @@ class AppDelegate
   #-------------------------------------------------------------
   def buildRootFolder
 
-    @rootFolder = Folder.alloc.initWithPath('/Users/aashbacher/Documents/')
+    @rootFolder = Folder.alloc.initWithPath('~/Documents/')
     @mainView.addSubview(@rootFolder)
 
     # Define constraints

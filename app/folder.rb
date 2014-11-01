@@ -20,7 +20,7 @@ class Folder < FlippedView
     self.translatesAutoresizingMaskIntoConstraints = false
 
     self.is_open = false
-    self.folderPath = folder_path
+    self.folderPath = File.expand_path(folder_path)
     self.folderName = File.basename(self.folderPath)
 
     drawFolderIcon
