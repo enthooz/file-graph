@@ -2,15 +2,13 @@ class SubfolderView < FlippedView
 
   FOLDER_SPACING = 10.0
 
-  attr_accessor :folderPath, :horizontalLine, :horizontalLineConstraints, :endConstraint
+  attr_accessor :horizontalLine, :horizontalLineConstraints, :endConstraint
 
   alias_method :folders, :subviews
 
-  def initWithPath(path)
+  def init
 
-    self.folderPath = path
-
-    init
+    super
 
     self.translatesAutoresizingMaskIntoConstraints = false
 
@@ -29,15 +27,10 @@ class SubfolderView < FlippedView
     self
   end
 
-  def open
-    # list subdirectories
-    subfolder_paths = Dir[File.join(self.folderPath, '*/')]
-
-    subfolder_paths.each do |subfolder_path|
-      self.addSubview(Folder.alloc.initWithPath(subfolder_path))
-    end
-
-    #drawLine
+  # Return all subfolderViews that are descendants of this subfolderView, i.e.
+  # that belong to folders in this subfolderView.
+  def subfolderViews
+    folders.collect { |folder| folder.open? ? folder.subfolderView : NilArray }
   end
 
   def close

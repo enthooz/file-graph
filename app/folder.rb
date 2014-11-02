@@ -5,23 +5,28 @@ class Folder < FlippedView
   FOLDER_SUBFOLDER_VERTICAL_SPACING = 20.0
   LINE_THICKNESS = 1.0
 
-  attr_accessor :is_open, :is_root, :folderPath, :folderName, :folderIcon, :subfolderView
-  attr_accessor :layoutConstraints, :subfolderViewConstraints
-  attr_accessor :verticalLine, :horizontalLine, :horizontalLineConstraints, :subfolderLines
+  attr_accessor :folderPath, :folderKey, :folderView # intialization arguments
+  attr_accessor :is_open, :is_root # status booleans
+  attr_accessor :folderName # derived
+  attr_accessor :folderIcon, :subfolderView # subviews
+  attr_accessor :layoutConstraints # constraints
+  attr_accessor :verticalLine, :horizontalLine, :subfolderLines # lines to subfolders
   #attr_reader :layer
 
   #-------------------------------------------------------------
   #
   #-------------------------------------------------------------
-  def initWithPath(folder_path)
+
+  def initWithPath(path, key: key, folderView: folderView)
 
     init
 
     self.translatesAutoresizingMaskIntoConstraints = false
 
     self.is_open = false
-    self.folderPath = File.expand_path(folder_path)
+    self.folderPath = File.expand_path(path)
     self.folderName = File.basename(self.folderPath)
+    self.folderKey = key
 
     drawFolderIcon
     drawSubfolderView
@@ -52,7 +57,7 @@ class Folder < FlippedView
   #
   #-------------------------------------------------------------
   def drawSubfolderView
-    @subfolderView = SubfolderView.alloc.initWithPath(self.folderPath)
+    @subfolderView = SubfolderView.alloc.init
   end
 
 
@@ -75,10 +80,21 @@ class Folder < FlippedView
   #-------------------------------------------------------------
   def open
     self.is_open = true
+
     self.addSubview(@subfolderView)
-    @subfolderView.open
+
+    subfolderPaths = Dir[File.join(self.folderPath, '*/')]
+
+    subfolderPaths.each_index do |index|
+      subfolderPath = subfolderPaths[index]
+      key = self.folderKey.dup << index 
+      subfolder = Folder.alloc.initWithPath(subfolderPath, key: key, folderView: self.folderView)
+      self.subfolderView.addSubview(subfolder)
+    end
+
     setConstraints
     self.drawLines
+
   end
 
   #-------------------------------------------------------------

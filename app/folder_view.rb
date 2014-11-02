@@ -2,15 +2,19 @@ class FolderView < FlippedView
 
   attr_accessor :rootFolder
 
-  def addRootFolder(folder)
-    raise 'InvalidFolder' unless folder.is_a? Folder
-    self.rootFolder = folder
-    addSubview(folder)
+  def initWithPath(path)
+    init
+    self.rootFolder = Folder.alloc.initWithPath(path, key: [0], folderView: self)
+    self.addSubview(self.rootFolder)
     setConstraints
   end
 
   def folders
     [ rootFolder ]
+  end
+
+  def addSubfolderView(subfolderView, withKey: folderKey)
+    #rootFolder.open? ? [rootFolder.subfolderView] : NilArray
   end
 
   def setConstraints
@@ -59,6 +63,10 @@ class FolderView < FlippedView
 
     puts "rootFolder[4][2][1][0]: #{rootFolder[4][2][1][0]}"
     puts "folders[0][4][2][1][0]: #{folders[0][4][2][1][0]}"
+
+    # puts "subfolderViews[0]: #{subfolderViews[0]}"
+    # puts "subfolderViews[0][0]: #{subfolderViews[0][0]}"
+    # puts "subfolderViews[0][1]: #{subfolderViews[0][1]}"
   end
 
 end

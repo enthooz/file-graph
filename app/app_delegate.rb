@@ -12,7 +12,6 @@ class AppDelegate
     buildWindow
     buildScrollView
     buildMainView
-    buildRootFolder
 
     if DEBUG
       puts "\n\n\n"
@@ -62,7 +61,7 @@ class AppDelegate
   #
   #-------------------------------------------------------------
   def buildMainView
-    @mainView = FolderView.alloc.init
+    @mainView = FolderView.alloc.initWithPath('~/Documents/')
 
     @mainView.translatesAutoresizingMaskIntoConstraints = false
     @mainView.backgroundColor = NSColorFromHex('#99ccff')
@@ -82,14 +81,6 @@ class AppDelegate
                                                                    constant: -1.0)) # avoid pixel wiggle caused by rounding
 
     @scrollView.addConstraints(constraints)
-  end
-
-  #-------------------------------------------------------------
-  #
-  #-------------------------------------------------------------
-  def buildRootFolder
-    @rootFolder = Folder.alloc.initWithPath('~/Documents/')
-    @mainView.addRootFolder(@rootFolder)
   end
 
 end
