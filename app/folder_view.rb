@@ -1,6 +1,6 @@
 class FolderView < FlippedView
 
-  attr_accessor :rootFolder
+  attr_accessor :rootFolder, :subfolderViews
 
   def initWithPath(path)
     init
@@ -13,15 +13,41 @@ class FolderView < FlippedView
     [ rootFolder ]
   end
 
+  # def subfolderViews
+  #   rootFolder.open? ? [rootFolder.subfolderView] : NilArray
+  # end
+
   def addSubfolderView(subfolderView, withKey: folderKey)
-    #rootFolder.open? ? [rootFolder.subfolderView] : NilArray
+    t0 = Time.now
+    puts "addSubfolderView..."
+    self.subfolderViews ||= {}
+    level = folderKey.length - 1
+    self.subfolderViews[level] ||= {}
+
+    self.subfolderViews[level][folderKey] = subfolderView
+
+    parent = self.rootFolder
+    if level > 0
+      parentLevel = level - 1
+      parentKey = folderKey.dup
+      parentKey.pop
+      parent = self.subfolderViews[parentLevel][parentKey]
+    end
+
+    self.addSubview(subfolderView)
+
+    views = { 'parent' => parent, 'subfolderView' => subfolderView }
+    self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[parent]-(20)-[subfolderView]",
+                                                                       options: 0, metrics: nil, views: views))
+    puts " done.  (#{Time.now - t0} s)"
+
   end
 
   def setConstraints
     # Define constraints
     views = { 'rootFolder' => self.rootFolder }
 
-    self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[rootFolder]-(>=20)-|",
+    self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[rootFolder]",
                                                                        options: 0, metrics: nil, views: views))
 
     # mainView.width >= rootFolder.width + 40

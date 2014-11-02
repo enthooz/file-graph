@@ -1,6 +1,6 @@
 class AppDelegate
 
-  DEBUG = false
+  DEBUG = true
 
   def applicationDidFinishLaunching(notification)
 

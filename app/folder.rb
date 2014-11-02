@@ -27,9 +27,10 @@ class Folder < FlippedView
     self.folderPath = File.expand_path(path)
     self.folderName = File.basename(self.folderPath)
     self.folderKey = key
+    self.folderView = folderView
 
     drawFolderIcon
-    drawSubfolderView
+    #drawSubfolderView
     setConstraints
 
     self
@@ -58,7 +59,15 @@ class Folder < FlippedView
   #-------------------------------------------------------------
   def drawSubfolderView
     @subfolderView = SubfolderView.alloc.init
-    self.addSubview(@subfolderView)
+    #self.addSubview(@subfolderView)
+    self.folderView.addSubfolderView(@subfolderView, withKey: self.folderKey)
+    self.folderView.addConstraint(NSLayoutConstraint.constraintWithItem(@subfolderView,
+                                                   attribute: NSLayoutAttributeCenterX,
+                                                   relatedBy: NSLayoutRelationEqual,
+                                                      toItem: self.folderIcon,
+                                                   attribute: NSLayoutAttributeCenterX,
+                                                  multiplier: 1.0,
+                                                    constant: 0.0))
   end
 
   #-------------------------------------------------------------
@@ -124,7 +133,7 @@ class Folder < FlippedView
     return unless self.open? && self.subfolders.any?
 
     self.verticalLine = Rectangle.alloc.init
-    self.addSubview(self.verticalLine)
+    self.folderView.addSubview(self.verticalLine)
 
     firstFolder = self.subfolderView.folders.first
 
@@ -135,7 +144,7 @@ class Folder < FlippedView
                 'verticalLine'    => self.verticalLine,
                 'subfolder'       => firstFolder }
 
-      self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[folderIcon][verticalLine(#{FOLDER_SUBFOLDER_VERTICAL_SPACING})][subfolder]",
+      self.folderView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[folderIcon][verticalLine(#{FOLDER_SUBFOLDER_VERTICAL_SPACING})][subfolder]",
                                                                          options: 0, metrics: nil, views: views))
 
     # More than one subfolder.
@@ -144,17 +153,17 @@ class Folder < FlippedView
       lastFolder = self.subfolderView.folders.last
 
       self.horizontalLine = Rectangle.alloc.init
-      self.addSubview(self.horizontalLine)
+      self.folderView.addSubview(self.horizontalLine)
 
       views = { 'folderIcon'      => self.folderIcon,
                 'verticalLine'    => self.verticalLine,
                 'horizontalLine'  => self.horizontalLine }
 
-      self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[folderIcon][verticalLine(#{((FOLDER_SUBFOLDER_VERTICAL_SPACING - LINE_THICKNESS) / 2.0).floor})][horizontalLine(#{LINE_THICKNESS})]",
+      self.folderView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[folderIcon][verticalLine(#{((FOLDER_SUBFOLDER_VERTICAL_SPACING - LINE_THICKNESS) / 2.0).floor})][horizontalLine(#{LINE_THICKNESS})]",
                                                                          options: 0, metrics: nil, views: views))
 
       # horizontalLine.left == firstFolder.centerX
-      self.addConstraint(NSLayoutConstraint.constraintWithItem(self.horizontalLine,
+      self.folderView.addConstraint(NSLayoutConstraint.constraintWithItem(self.horizontalLine,
                                                            attribute: NSLayoutAttributeLeft,
                                                            relatedBy: NSLayoutRelationEqual,
                                                            toItem: firstFolder,
@@ -162,7 +171,7 @@ class Folder < FlippedView
                                                            multiplier: 1.0,
                                                            constant: 0.0))
       # horizontalLine.right == lastFolder.centerX
-      self.addConstraint(NSLayoutConstraint.constraintWithItem(self.horizontalLine,
+      self.folderView.addConstraint(NSLayoutConstraint.constraintWithItem(self.horizontalLine,
                                                            attribute: NSLayoutAttributeRight,
                                                            relatedBy: NSLayoutRelationEqual,
                                                            toItem: lastFolder,
@@ -176,7 +185,7 @@ class Folder < FlippedView
 
     # At least one subfolder.
     # verticalLine.centerX == folderIcon.centerX
-    self.addConstraint(NSLayoutConstraint.constraintWithItem(self.verticalLine,
+    self.folderView.addConstraint(NSLayoutConstraint.constraintWithItem(self.verticalLine,
                                                          attribute: NSLayoutAttributeCenterX,
                                                          relatedBy: NSLayoutRelationEqual,
                                                          toItem: self.folderIcon,
@@ -184,20 +193,20 @@ class Folder < FlippedView
                                                          multiplier: 1.0,
                                                          constant: 0.0))
     # verticalLine.width = 1
-    self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[verticalLine(#{LINE_THICKNESS})]", options: 0, metrics: nil, views: views))
+    self.folderView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[verticalLine(#{LINE_THICKNESS})]", options: 0, metrics: nil, views: views))
   end
 
   def drawLineToSubfolder(subfolder)
     subfolderLine = Rectangle.alloc.init
-    self.addSubview(subfolderLine)
+    self.folderView.addSubview(subfolderLine)
 
     views = { 'horizontalLine' => self.horizontalLine, 'subfolderLine' => subfolderLine, 'subfolder' => subfolder }
-    self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[horizontalLine][subfolderLine(#{((FOLDER_SUBFOLDER_VERTICAL_SPACING - LINE_THICKNESS) / 2.0).ceil})][subfolder]",
+    self.folderView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[horizontalLine][subfolderLine(#{((FOLDER_SUBFOLDER_VERTICAL_SPACING - LINE_THICKNESS) / 2.0).ceil})][subfolder]",
                                                                        options: 0, metrics: nil, views: views))
-    self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[subfolderLine(#{LINE_THICKNESS})]",
+    self.folderView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[subfolderLine(#{LINE_THICKNESS})]",
                                                                        options: 0, metrics: nil, views: views))
 
-    self.addConstraint(NSLayoutConstraint.constraintWithItem(subfolderLine,
+    self.folderView.addConstraint(NSLayoutConstraint.constraintWithItem(subfolderLine,
                                                          attribute: NSLayoutAttributeCenterX,
                                                          relatedBy: NSLayoutRelationEqual,
                                                          toItem: subfolder,
