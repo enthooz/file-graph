@@ -1,6 +1,7 @@
 class SubfolderView < FlippedView
 
   FOLDER_SPACING = 10.0
+  DEBUG_RECT = true
 
   attr_accessor :horizontalLine, :horizontalLineConstraints, :endConstraint
 

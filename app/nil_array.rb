@@ -12,5 +12,11 @@ class NilArray
     def fetch(index, default)
       self
     end
+    def empty?
+      true
+    end
+    def any?
+      false
+    end
   end
 end

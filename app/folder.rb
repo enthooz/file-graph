@@ -40,7 +40,7 @@ class Folder < FlippedView
   end
 
   def subfolders
-    return NilArray if subfolderView.empty?
+    return NilArray if subfolderView.nil? || subfolderView.empty?
     subfolderView.folders
   end
 
@@ -58,8 +58,16 @@ class Folder < FlippedView
   #-------------------------------------------------------------
   def drawSubfolderView
     @subfolderView = SubfolderView.alloc.init
+    self.addSubview(@subfolderView)
   end
 
+  #-------------------------------------------------------------
+  #
+  #-------------------------------------------------------------
+  def eraseSubfolderView
+    @subfolderView.removeFromSuperview
+    @subfolderView = nil
+  end
 
   #-------------------------------------------------------------
   #
@@ -81,7 +89,7 @@ class Folder < FlippedView
   def open
     self.is_open = true
 
-    self.addSubview(@subfolderView)
+    self.drawSubfolderView
 
     subfolderPaths = Dir[File.join(self.folderPath, '*/')]
 
@@ -103,16 +111,17 @@ class Folder < FlippedView
   def close
     self.is_open = false
     @subfolderView.close
-    setConstraints
     self.eraseLines
+    self.eraseSubfolderView
+    setConstraints
   end
 
 
   # TODO: this breaks the ability to add subfolders after drawing line
   def drawLines
 
-    # No subfolders.
-    return if self.subfolderView.empty?
+    # Closed or no subfolders.
+    return unless self.open? && self.subfolders.any?
 
     self.verticalLine = Rectangle.alloc.init
     self.addSubview(self.verticalLine)
@@ -231,7 +240,7 @@ class Folder < FlippedView
       self.layoutConstraints = nil
     end
 
-    if @subfolderView.isDescendantOf(self) && !@subfolderView.empty?
+    if @subfolderView.respond_to?(:isDescendantOf) && @subfolderView.isDescendantOf(self) && !@subfolderView.empty?
       self.setConstraintsWithSubfolderView
     else
       self.setConstraintsWithoutSubfolderView
