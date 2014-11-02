@@ -18,5 +18,8 @@ class NilArray
     def any?
       false
     end
+    def each
+      self
+    end
   end
 end

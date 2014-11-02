@@ -119,10 +119,20 @@ class Folder < FlippedView
   #-------------------------------------------------------------
   def close
     self.is_open = false
+    closeAllSubfolders
     @subfolderView.close
     self.eraseLines
     self.eraseSubfolderView
     setConstraints
+  end
+
+  def closeAllSubfolders
+    subfolders.each do |subfolder|
+      if subfolder.open?
+        subfolder.closeAllSubfolders
+        subfolder.close
+      end
+    end
   end
 
 
