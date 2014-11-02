@@ -62,7 +62,7 @@ class AppDelegate
   #
   #-------------------------------------------------------------
   def buildMainView
-    @mainView = FlippedView.alloc.init
+    @mainView = FolderView.alloc.init
 
     @mainView.translatesAutoresizingMaskIntoConstraints = false
     @mainView.backgroundColor = NSColorFromHex('#99ccff')
@@ -88,33 +88,8 @@ class AppDelegate
   #
   #-------------------------------------------------------------
   def buildRootFolder
-
     @rootFolder = Folder.alloc.initWithPath('~/Documents/')
-    @mainView.addSubview(@rootFolder)
-
-    # Define constraints
-    views = { 'mainView' => @mainView, 'rootFolder' => @rootFolder }
-
-    @mainView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[rootFolder]-(>=20)-|", options: 0, metrics: nil, views: views))
-
-    # mainView.width >= rootFolder.width + 40
-    @mainView.addConstraint(NSLayoutConstraint.constraintWithItem(@mainView,
-                                                                   attribute: NSLayoutAttributeWidth,
-                                                                   relatedBy: NSLayoutRelationGreaterThanOrEqual,
-                                                                   toItem: @rootFolder,
-                                                                   attribute: NSLayoutAttributeWidth,
-                                                                   multiplier: 1.0,
-                                                                   constant: 40))
-
-    # rootFolder.centerX == mainView.centerX
-    @mainView.addConstraint(NSLayoutConstraint.constraintWithItem(@rootFolder, 
-                                                   attribute: NSLayoutAttributeCenterX,
-                                                   relatedBy: NSLayoutRelationEqual,
-                                                      toItem: @mainView,
-                                                   attribute: NSLayoutAttributeCenterX,
-                                                  multiplier: 1.0,
-                                                    constant: 0.0))
-
+    @mainView.addRootFolder(@rootFolder)
   end
 
 end

@@ -30,6 +30,15 @@ class Folder < FlippedView
     self
   end
 
+  def [](index)
+    subfolders.fetch(index, NilArray)
+  end
+
+  def subfolders
+    return NilArray if subfolderView.empty?
+    subfolderView.folders
+  end
+
 
   #-------------------------------------------------------------
   #
