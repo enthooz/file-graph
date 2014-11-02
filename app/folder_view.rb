@@ -9,6 +9,10 @@ class FolderView < FlippedView
     setConstraints
   end
 
+  def folders
+    [ rootFolder ]
+  end
+
   def setConstraints
     # Define constraints
     views = { 'rootFolder' => self.rootFolder }
@@ -37,11 +41,24 @@ class FolderView < FlippedView
 
   def mouseUp(event)
     puts "FolderView#mouseUp"
+
+    puts "rootFolder: #{rootFolder}"
+    puts "folders[0]: #{folders[0]}"
+
     puts "rootFolder[0]: #{rootFolder[0]}"
-    puts "rootFolder[1]: #{rootFolder[0]}"
+    puts "folders[0][0]: #{folders[0][0]}"
+
+    puts "rootFolder[1]: #{rootFolder[1]}"
+    puts "folders[0][1]: #{folders[0][1]}"
+
     puts "rootFolder[0][0]: #{rootFolder[0][0]}"
+    puts "folders[0][0][0]: #{folders[0][0][0]}"
+
     puts "rootFolder[3][1]: #{rootFolder[3][1]}"
+    puts "folders[0][3][1]: #{folders[0][3][1]}"
+
     puts "rootFolder[4][2][1][0]: #{rootFolder[4][2][1][0]}"
+    puts "folders[0][4][2][1][0]: #{folders[0][4][2][1][0]}"
   end
 
 end
