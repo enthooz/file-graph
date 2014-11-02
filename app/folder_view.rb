@@ -1,9 +1,11 @@
 class FolderView < FlippedView
 
-  attr_accessor :rootFolder, :subfolderViews
+  attr_accessor :rootFolder, :subfolderViews, :subfolderLayerConstraints
 
   def initWithPath(path)
     init
+    self.subfolderViews = {}
+    self.subfolderLayerConstraints = {}
     self.rootFolder = Folder.alloc.initWithPath(path, key: [0], folderView: self)
     self.addSubview(self.rootFolder)
     setConstraints
@@ -18,29 +20,40 @@ class FolderView < FlippedView
   # end
 
   def addSubfolderView(subfolderView, withKey: folderKey)
-    t0 = Time.now
-    puts "addSubfolderView..."
-    self.subfolderViews ||= {}
-    level = folderKey.length - 1
-    self.subfolderViews[level] ||= {}
 
-    self.subfolderViews[level][folderKey] = subfolderView
+    # store reference in subfolderViews hash
+    layer = folderKey.length - 1
+    self.subfolderViews[layer] ||= {}
+    self.subfolderViews[layer][folderKey] = subfolderView
 
+    # determine the parent
     parent = self.rootFolder
-    if level > 0
-      parentLevel = level - 1
+    if layer > 0
+      parentLevel = layer - 1
       parentKey = folderKey.dup
       parentKey.pop
       parent = self.subfolderViews[parentLevel][parentKey]
     end
 
+    # add view
     self.addSubview(subfolderView)
 
+    # add vertical constraint against parent
     views = { 'parent' => parent, 'subfolderView' => subfolderView }
     self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[parent]-(20)-[subfolderView]",
                                                                        options: 0, metrics: nil, views: views))
-    puts " done.  (#{Time.now - t0} s)"
 
+    setConstraintsForSubfolderViewLayer(layer)
+  end
+
+  def removeSubfolderViewAtKey(folderKey)
+    # store reference in subfolderViews hash
+    layer = folderKey.length - 1
+    self.subfolderViews[layer] ||= {}
+    subfolderView = self.subfolderViews[layer].delete(folderKey)
+
+    subfolderView.removeFromSuperview unless subfolderView.nil?
+    setConstraintsForSubfolderViewLayer(layer)
   end
 
   def setConstraints
@@ -67,6 +80,31 @@ class FolderView < FlippedView
                                                    attribute: NSLayoutAttributeCenterX,
                                                   multiplier: 1.0,
                                                     constant: 0.0))
+  end
+
+  def setConstraintsForSubfolderViewLayer(layer)
+
+    self.removeConstraints(self.subfolderLayerConstraints[layer]) unless self.subfolderLayerConstraints[layer].nil?
+
+    return if self.subfolderViews[layer].empty?
+
+    subfolderViewKeys = self.subfolderViews[layer].keys.sort
+
+    views = {}
+    visualFormat = "H:|-(>=20)"
+    abc = ('a'..'z').to_a
+      
+    subfolderViewKeys.each do |key|
+      subfolderView = self.subfolderViews[layer][key]
+      viewKey = abc.shuffle[0,8].join
+      views[viewKey] = subfolderView
+      visualFormat += "-[#{viewKey}]"
+    end
+
+    visualFormat += "-(>=20)-|"
+    self.subfolderLayerConstraints[layer] = NSLayoutConstraint.constraintsWithVisualFormat(visualFormat,
+                                                                                           options: 0, metrics: nil, views: views)
+    self.addConstraints(self.subfolderLayerConstraints[layer])
   end
 
   def mouseUp(event)

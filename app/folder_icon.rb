@@ -19,7 +19,7 @@ class FolderIcon < FlippedView
     self.needsDisplay = true
     drawFolderRect
     drawLabel
-    setConstraints
+    #setConstraints
     self.layer.addSublayer(@folderRect)
     #self.backgroundColor = NSColorFromHex('#ff0000', 0.5)
     self
@@ -54,17 +54,17 @@ class FolderIcon < FlippedView
   #                                                                views: views))
   # end
 
-  def setConstraints
-    views = { 'folderIcon' => self }
+  # def setConstraints
+  #   views = { 'folderIcon' => self }
 
-    # self.height == FolderIcon::HEIGHT
-    vConstraints = NSLayoutConstraint.constraintsWithVisualFormat("V:[folderIcon(==#{FolderIcon::HEIGHT})]",
-                                                                  options: 0, metrics: nil, views: views)
-    # self.width == FolderIcon::WIDTH
-    hConstraints = NSLayoutConstraint.constraintsWithVisualFormat("H:[folderIcon(==#{FolderIcon::WIDTH})]",
-                                                                  options: 0, metrics: nil, views: views)
-    self.addConstraints(vConstraints + hConstraints)
-  end
+  #   # self.height == FolderIcon::HEIGHT
+  #   vConstraints = NSLayoutConstraint.constraintsWithVisualFormat("V:[folderIcon(==#{FolderIcon::HEIGHT})]",
+  #                                                                 options: 0, metrics: nil, views: views)
+  #   # self.width == FolderIcon::WIDTH
+  #   hConstraints = NSLayoutConstraint.constraintsWithVisualFormat("H:[folderIcon(==#{FolderIcon::WIDTH})]",
+  #                                                                 options: 0, metrics: nil, views: views)
+  #   self.addConstraints(vConstraints + hConstraints)
+  # end
 
   def drawFolderRect
     @folderRect = CALayer.layer

@@ -74,13 +74,23 @@ class SubfolderView < FlippedView
     else
       # subfolder.left == penultimateSubfolder.right + 10
       thePenultimateFolder = self.subviews[self.subviews.count - 2]
-      self.addConstraint(NSLayoutConstraint.constraintWithItem(subfolder,
-                                                     attribute: NSLayoutAttributeLeft,
-                                                     relatedBy: NSLayoutRelationEqual,
-                                                        toItem: thePenultimateFolder,
-                                                     attribute: NSLayoutAttributeRight,
-                                                    multiplier: 1.0,
-                                                      constant: FOLDER_SPACING))
+      lowPriority = NSLayoutConstraint.constraintWithItem(subfolder,
+                                                attribute: NSLayoutAttributeLeft,
+                                                relatedBy: NSLayoutRelationEqual,
+                                                   toItem: thePenultimateFolder,
+                                                attribute: NSLayoutAttributeRight,
+                                               multiplier: 1.0,
+                                                 constant: FOLDER_SPACING)
+      requiredPriority = NSLayoutConstraint.constraintWithItem(subfolder,
+                                                attribute: NSLayoutAttributeLeft,
+                                                relatedBy: NSLayoutRelationGreaterThanOrEqual,
+                                                   toItem: thePenultimateFolder,
+                                                attribute: NSLayoutAttributeRight,
+                                               multiplier: 1.0,
+                                                 constant: FOLDER_SPACING)
+      lowPriority.priority = NSLayoutPriorityDefaultLow
+      self.addConstraint(lowPriority)
+      self.addConstraint(requiredPriority)
     end
     
     if (self.endConstraint != nil)
